@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from django.views import generic
 
-# Create your views here.
+
+class MainPaige(generic.TemplateView):
+    template_name = 'soc_net_app/home.html'
+
