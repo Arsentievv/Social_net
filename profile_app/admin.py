@@ -1,6 +1,5 @@
 from django.contrib import admin
-from django.contrib import admin
-from profile_app.models import Profile
+from profile_app.models import Profile, Relationship
 
 
 # class ProfileAdmin(admin.ModelAdmin):
@@ -13,3 +12,4 @@ from profile_app.models import Profile
 #
 # admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Profile)
+admin.site.register(Relationship)
