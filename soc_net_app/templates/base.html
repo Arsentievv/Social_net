@@ -17,17 +17,17 @@
     <title>Social net - {% block title %}{% endblock title %}</title>
   </head>
   <body>
-  {% include 'soc_net_app/navbar.html' %}
-    <div class="ui container">
-      {% block content %}
-      {% endblock content %}
-    </div>
+    {% include 'main/navbar.html' %}
+      <div class="ui container">
+        {% block content %}
+        {% endblock content %}
+      </div>
 
-    {% block scripts %}
-    {% endblock scripts %}
+      {% block scripts %}
+      {% endblock scripts %}
 
-   <!--Custom js ADD HERE-->
-  <script type="text/javascript" src="{% static 'main.js' %}"></script>
+     <!--Custom js ADD HERE-->
+     <script src="{% static 'main.js' %}" type="text/javascript"></script>
 
   </body>
 </html>

@@ -15,15 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
+from soc_net_project import settings
 from django.conf.urls.static import static
 
-
+from soc_net_app.views import MainPaige
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('soc_net_app.urls'))
+    path('', include('soc_net_app.urls')),
+    path('profile/', include('profile_app.urls', namespace='profiles')),
 ]
+
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
