@@ -34,7 +34,69 @@ my profile
     <div class="ui green message">Your profile has been updated!</div>
     <hr>
   {% endif %}
-  <h3>My profile: {{request.user}}</h3>
+  <h3>{{profile.first_name}} {{profile.last_name}}</h3>
+  <div class="ui grid">
+    <div class="row">
+      <div class="six wide column">
+        <img class="ui medium rounded image" src="{{profile.avatar.url}}" alt="">
+        <div class="row mt-5">
+          <button class="ui secondary button" id="modal-btn">Update your profile</button>
+        </div>
+      </div>
+      <div class="ten wide column">
+        <table class="ui table">
+          <tbody>
+            <tr>
+              <td>Username</td>
+              <td>{{profile.user}}</td>
+            </tr>
+            <tr>
+              <td>First name</td>
+              <td>{{profile.first_name}}</td>
+            </tr>
+            <tr>
+              <td>Last name</td>
+              <td>{{profile.last_name}}</td>
+            </tr>
+            <tr>
+              <td>BIO</td>
+              <td>{{profile.bio}}</td>
+            </tr>
+            <tr>
+              <td>Country</td>
+              <td>{{profile.country}}</td>
+            </tr>
+            <tr>
+              <td>Number of friends</td>
+              <td>{{profile.get_friends_count}}</td>
+            </tr>
+            <tr>
+              <td>Friends</td>
+              <td>
+                <ul>
+                  {% for friend in profile.get_friends %}
+                  <li>{{friend}}</li>
+                  {% endfor %}
+                </ul>
+              </td>
+            </tr>
+            <tr>
+              <td>Total recieved likes</td>
+              <td>{{profile.get_received_like_count}}</td>
+            </tr>
+            <tr>
+              <td>Total posts count</td>
+              <td>{{profile.get_posts_count}}</td>
+            </tr>
+            <tr>
+              <td>Total likes given</td>
+              <td>{{profile.get_like_given_count}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
-<button class="ui secondary button" id="modal-btn">Update your profile</button>
+
 {% endblock content %}

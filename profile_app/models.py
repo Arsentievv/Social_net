@@ -38,6 +38,27 @@ class Profile(models.Model):
     def get_friends_count(self):
         return self.friends.all().count()
 
+    def get_posts_count(self):
+        return self.posts.all().count()
+
+    def get_all_authors_posts(self):
+        return self.posts.all()
+
+    def get_like_given_count(self):
+        likes = self.likes_user.all()
+        total_like = 0
+        for item in likes:
+            if item.value == 'Like':
+                total_like += 1
+        return total_like
+
+    def get_received_like_count(self):
+        posts = self.posts.all()
+        total_like = 0
+        for post in posts:
+            total_like += post.likes_post.count()
+        return total_like
+
 STATUS_CHOICES = (
     ('send', 'send'),
     ('accepted', 'accepted'),

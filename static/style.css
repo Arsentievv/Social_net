@@ -12,6 +12,10 @@ body {
     margin-bottom: 7px !important;
 }
 
+.mt-5 {
+    margin-top: 5px !important;
+}
+
 .mymodal {
     height: 300px !important;
     top: 200px !important;
