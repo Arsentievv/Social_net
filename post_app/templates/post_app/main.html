@@ -13,8 +13,8 @@
                 <div class="ui grid">
                     <div class="row">
                         {% if request.user == obj.author.user %}
-                            <a href=""><button class="ui button bwhite-lg ">Update</button></a>
-                            <a href=""><button class="ui button bwhite-lg ">Delete</button></a>
+                            <a href="{% url 'posts:post-update' pk=obj.pk %}"><button class="ui button bwhite-lg ">Update</button></a>
+                            <a href="{% url 'posts:post-delete' pk=obj.pk %}"><button class="ui button bwhite-lg ">Delete</button></a>
                         {% endif %}
                     </div>
                 </div>
@@ -54,8 +54,8 @@
                 </div>
                 <button class="cmt_btn ui button mb-5">show / hide comments</button>
                 <div class="comment-box">
-                {% if obj.comment_set.all %}
-                    {% for c in obj.comment_set.all %}
+                {% if obj.comments_post.all %}
+                    {% for c in obj.comments_post.all %}
                     
                         <div class="ui segment mb-5">
                             <img class="ui avatar image" src={{c.user.avatar.url}}>
