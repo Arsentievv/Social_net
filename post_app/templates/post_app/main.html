@@ -26,12 +26,32 @@
                         </button>
                         &nbsp;{{post.num_likes}}
                     </form>
+                    <div>
+                        {% if post.comments_post.all %}
+                            {% for comment in post.comments_post.all %}
+                                <p>{{comment.body}}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
                 </div>
+                <form action="" method="post" class="ui form">
+                    {% csrf_token %}
+                    <input type="hidden" name="post_id" value={{post.id}}>
+                    {{c_form}}
+                    <button type="submit" class="ui primary button" name="submit_c_form">Comment</button>
+                </form>
             </div>
           {% endfor %}
        </div>
        <div class="five wide column">
-            Form
+           {% if post_added %}
+                <div class="ui green message">Post added</div>
+           {% endif %}
+           <form action="" method="post" class="ui form" enctype="multipart/form-data">
+              {% csrf_token %}
+               {{p_form}}
+               <button type="submit" class="ui button positive" name="submit_p_form">Send Post</button>
+           </form>
        </div>
    </div>
 </div>
