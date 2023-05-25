@@ -1,7 +1,9 @@
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.views import generic
 from profile_app.models import Profile, Relationship
 from .forms import ProfileModelForm
+
 
 
 # class MyProfileView(generic.DetailView):
@@ -38,6 +40,16 @@ def invites_received_view(request):
     return render(request, 'profile_app/my_invites.html', context=context)
 
 
+def invite_profile_list_view(request):
+    user = request.user
+    qs = Profile.objects.get_all_profiles_to_invite(sender=user)
+
+    context = {
+        'qs': qs,
+    }
+
+    return render(request, 'profile_app/invite_profiles.html', context=context)
+
 def profiles_list_view(request):
     user = request.user
     qs = Profile.objects.get_all_profiles(me=user)
@@ -48,13 +60,32 @@ def profiles_list_view(request):
 
     return render(request, 'profile_app/profiles_list.html', context=context)
 
+class ProfileListView(generic.ListView):
+    model = Profile
+    template_name = 'profile_app/profiles_list.html'
+    context_object_name = 'qs'
 
-def invite_profile_list_view(request):
-    user = request.user
-    qs = Profile.objects.get_all_profiles_to_invite(sender=user)
+    def get_queryset(self):
+        qs = Profile.objects.get_all_profiles(me=self.request.user)
+        return qs
 
-    context = {
-        'qs': qs,
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = User.objects.get(username__iexact=self.request.user)
+        profile = Profile.objects.get(user=user)
+        rel_s = Relationship.objects.filter(receiver=profile)
+        rel_r = Relationship.objects.filter(sender=profile)
+        rel_receiver = []
+        for item in rel_r:
+            rel_receiver.append(item.receiver.user)
+        rel_sender = []
+        for item in rel_s:
+            rel_sender.append(item.sender.user)
+        context['rel_receiver'] = rel_receiver
+        context['rel_sender'] = rel_sender
+        context['is_empty'] = False
+        if len(self.get_queryset()) == 0:
+            context['is_empty'] = True
+        return context
 
-    return render(request, 'profile_app/invite_profiles.html', context=context)
+
