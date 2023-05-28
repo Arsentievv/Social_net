@@ -5,7 +5,11 @@ from profile_app.models import Profile
 from .models import Post, Like
 from .forms import PostModelForm, CommentModelForm
 from django.views.generic import UpdateView, DeleteView
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
+@login_required
 def post_model_create_and_list_view(request):
     qs = Post.objects.all()
     profile = Profile.objects.get(user=request.user)
@@ -42,7 +46,7 @@ def post_model_create_and_list_view(request):
 
     return render(request, 'post_app/main.html', context=context)
 
-
+@login_required
 def like_unlike_posts(request):
     user = request.user
     if request.method == 'POST':
@@ -65,12 +69,17 @@ def like_unlike_posts(request):
         else:
             like.value = 'Like'
 
-        post_obj.save()
-        like.save()
+            post_obj.save()
+            like.save()
 
-        return redirect('posts:main-post-view')
+        data = {
+            'value': like.value,
+            'likes': post_obj.liked.all().count()
+        }
+        # return JsonResponse(data, safe=False)
+    return redirect('posts:main-post-view')
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     template_name = 'post_app/confirm_del.html'
     success_url = reverse_lazy('posts:main-post-view')
@@ -82,7 +91,7 @@ class PostDeleteView(DeleteView):
             messages.warning(self.request, 'You should be the author of the post to delete it')
         return obj
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostModelForm
     template_name = 'post_app/update.html'

@@ -4,14 +4,10 @@ from django.views import generic
 from profile_app.models import Profile, Relationship
 from .forms import ProfileModelForm
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-
-
-# class MyProfileView(generic.DetailView):
-#     model = Profile
-#     context_object_name = 'profile'
-#     template_name = 'profile_app/my_profile.html'
-
+@login_required
 def my_profile_view(request):
     profile = Profile.objects.get(user=request.user)
     form = ProfileModelForm(request.POST or None, request.FILES or None, instance=profile)
@@ -29,7 +25,7 @@ def my_profile_view(request):
 
     return render(request, 'profile_app/my_profile.html', context=context)
 
-
+@login_required
 def invites_received_view(request):
     profile = Profile.objects.get(user=request.user)
     qs = Relationship.objects.invatations_recieved(receiver=profile)
@@ -44,6 +40,7 @@ def invites_received_view(request):
 
     return render(request, 'profile_app/my_invites.html', context=context)
 
+@login_required
 def accept_invatation(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -55,6 +52,7 @@ def accept_invatation(request):
             rel.save()
     return redirect('profiles:my_invites')
 
+@login_required
 def reject_invatation(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -64,16 +62,32 @@ def reject_invatation(request):
         rel.delete()
     return redirect('profiles:my_invites')
 
-def invite_profile_list_view(request):
-    user = request.user
-    qs = Profile.objects.get_all_profiles_to_invite(sender=user)
+@login_required
+def reject_sent_invatation(request):
+    if request.method == 'POST':
+        pk = request.POST.get('profile_pk')
+        receiver = Profile.objects.get(pk=pk)
+        sender = Profile.objects.get(user=request.user)
+        rel = get_object_or_404(Relationship, sender=sender, receiver=receiver)
+        rel.delete()
+    return redirect('profiles:invite_profiles')
 
+@login_required
+def invite_profile_list_view(request):
+    user = User.objects.get(username__iexact=request.user)
+    profile = Profile.objects.get(user=user)
+    qs = Relationship.objects.invatations_sent(sender=profile)
+    results = list(map(lambda x: x.receiver, qs))
+    is_empty = False
+    if len(results) == 0:
+        is_empty = True
     context = {
-        'qs': qs,
-    }
+        'qs': results,
+        'is_empty': is_empty,
+        }
 
     return render(request, 'profile_app/invite_profiles.html', context=context)
-
+@login_required
 def profiles_list_view(request):
     user = request.user
     qs = Profile.objects.get_all_profiles(me=user)
@@ -84,7 +98,7 @@ def profiles_list_view(request):
 
     return render(request, 'profile_app/profiles_list.html', context=context)
 
-class ProfileListView(generic.ListView):
+class ProfileListView(LoginRequiredMixin, generic.ListView):
     model = Profile
     template_name = 'profile_app/profiles_list.html'
     context_object_name = 'qs'
@@ -112,6 +126,7 @@ class ProfileListView(generic.ListView):
             context['is_empty'] = True
         return context
 
+@login_required
 def send_invatation(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -122,6 +137,7 @@ def send_invatation(request):
         return redirect(request.META.get('HTTP_REFERER'))
     return redirect('profiles:my_profile')
 
+@login_required
 def remove_from_friends(request):
     if request.method == 'POST':
         pk = request.POST.get('profile_pk')
@@ -137,7 +153,7 @@ def remove_from_friends(request):
     return redirect('profiles:my_profile')
 
 
-class ProfileDetailView(generic.DeleteView):
+class ProfileDetailView(LoginRequiredMixin, generic.DeleteView):
     model = Profile
     template_name = 'profile_app/profile_view.html'
 

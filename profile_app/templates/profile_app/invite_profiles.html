@@ -5,10 +5,37 @@ Invite profiles
 {% endblock title %}
 
 {% block content %}
-    <ul>
-        {% for profile in qs %}
-            <li>{{profile}}</li>
-        {% endfor %}
-    </ul>
+    {% if is_empty %}
+        <h1>No invitations here...</h1>
+    {% endif %}
+
+    {% for obj in qs %}
+    <div class="ui segment">
+        <div class="ui grid">
+            <div class="row">
+                <div class="ui three wide column">
+                    <img class="ui small circular image" src={{obj.avatar.url}} alt="">
+                </div>
+                <div class="ui thirteen wide column">
+                     <h3>{{obj.user}}</h3>
+                        <p>{{obj.bio}}</p>
+                        <a href={{obj.get_absolute_url}}><button class="ui primary button mb-5 w-big">See profile</button></a>
+                        <br>
+                        <button class="ui disabled button mb-5 w-big"><i class="user icon"></i>Waiting for approval</button>
+                        <br>
+                        <form action="{% url 'profiles:reject_sent_invatations' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="profile_pk" value={{obj.pk}}>
+                            <button type="submit" class="ui negative basic button w-big mb-5">
+                                <i class="close icon"></i>Reject invite
+                            </button>
+                        </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    {% endfor %}
+
 
 {% endblock content %}
