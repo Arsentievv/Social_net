@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('soc_net_app.urls')),
     path('profile/', include('profile_app.urls', namespace='profiles')),
     path('posts/', include('post_app.urls', namespace='posts')),
+    path('accounts/', include('allauth.urls')),
 ]
 
 

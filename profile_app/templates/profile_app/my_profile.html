@@ -75,7 +75,7 @@ my profile
               <td>
                 <ul>
                   {% for friend in profile.get_friends %}
-                  <li>{{friend}}</li>
+                  <li><img class="ui small circular image" src={{friend.avatar.url}} alt="">{{friend}}</li>
                   {% endfor %}
                 </ul>
               </td>
